@@ -5,7 +5,10 @@ __pycache__/
 *.pyd
 .Python
 staticfiles/
+db.sqlite3
+media/
 .DS_Store
 .idea/
 .vscode/
 generate_privee.py
+.env
