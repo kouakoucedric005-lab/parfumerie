@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block titre %}{{ titre_page }} - CMS {{ NOM_SITE }}{% endblock %}
+
+{% block contenu %}
+  <section class="conteneur section">
+    <div class="cms-header">
+      <div>
+        <a class="lien-discret" href="{% url 'catalogue:cms_parfum_liste' %}">← Retour à la liste des parfums</a>
+        <h1 class="section__titre">{{ titre_page }}</h1>
+      </div>
+    </div>
+
+    <div class="cms-form-grid">
+      {# Formulaire du Parfum #}
+      <form class="cms-form-card" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h2 class="cms-form-section-title">1. Informations Générales</h2>
+
+        <div class="cms-form-row">
+          <div class="champ-groupe">
+            <label for="{{ form.nom.id_for_label }}">Nom de la Fragrance *</label>
+            {{ form.nom }}
+            {{ form.nom.errors }}
+          </div>
+
+          <div class="champ-groupe">
+            <label for="{{ form.marque.id_for_label }}">Maison / Marque *</label>
+            {{ form.marque }}
+            {{ form.marque.errors }}
+          </div>
+        </div>
+
+        <div class="cms-form-row">
+          <div class="champ-groupe">
+            <label for="{{ form.famille.id_for_label }}">Famille Olfactive</label>
+            {{ form.famille }}
+          </div>
+
+          <div class="champ-groupe">
+            <label for="{{ form.genre.id_for_label }}">Genre Cible</label>
+            {{ form.genre }}
+          </div>
+
+          <div class="champ-groupe">
+            <label for="{{ form.concentration.id_for_label }}">Concentration</label>
+            {{ form.concentration }}
+          </div>
+        </div>
+
+        <div class="champ-groupe">
+          <label for="{{ form.collection.id_for_label }}">Collection Rattachée</label>
+          {{ form.collection }}
+        </div>
+
+        <div class="champ-groupe">
+          <label for="{{ form.description.id_for_label }}">Description commerciale</label>
+          {{ form.description }}
+        </div>
+
+        <h2 class="cms-form-section-title" style="margin-top: 2rem;">2. Pyramide Olfactive</h2>
+        <div class="cms-form-row">
+          <div class="champ-groupe">
+            <label for="{{ form.notes_tete.id_for_label }}">Notes de Tête</label>
+            {{ form.notes_tete }}
+          </div>
+          <div class="champ-groupe">
+            <label for="{{ form.notes_coeur.id_for_label }}">Notes de Cœur</label>
+            {{ form.notes_coeur }}
+          </div>
+          <div class="champ-groupe">
+            <label for="{{ form.notes_fond.id_for_label }}">Notes de Fond</label>
+            {{ form.notes_fond }}
+          </div>
+        </div>
+
+        <h2 class="cms-form-section-title" style="margin-top: 2rem;">3. Visuel &amp; Visibilité</h2>
+        <div class="champ-groupe">
+          <label for="{{ form.image.id_for_label }}">Image Principale (.png, .jpg)</label>
+          {% if parfum and parfum.image %}
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+              <img src="{{ parfum.image.url }}" alt="{{ parfum.nom }}" style="width: 60px; height: 75px; object-fit: cover; border-radius: 6px;">
+              <span class="cms-text-sub">Fichier actuel : {{ parfum.image.name }}</span>
+            </div>
+          {% endif %}
+          {{ form.image }}
+        </div>
+
+        <div class="cms-checkbox-group">
+          <label class="checkbox-item">{{ form.nouveau }} Marquer comme Nouveauté</label>
+          <label class="checkbox-item">{{ form.meilleure_vente }} Marquer comme Best-Seller</label>
+          <label class="checkbox-item">{{ form.actif }} Afficher immédiatement sur le site public</label>
+        </div>
+
+        <div class="cms-form-actions">
+          <button class="bouton bouton--pill" type="submit">Enregistrer les modifications</button>
+        </div>
+      </form>
+
+      {# Section Gestion des Contenances & Stocks (si édition) #}
+      {% if parfum %}
+        <div class="cms-sidebar-card">
+          <h2>4. Contenances &amp; Stocks</h2>
+          <p class="cms-text-sub">Gérez les volumes (ml), tarifs (€) et stocks disponibles.</p>
+
+          <ul class="cms-variantes-list">
+            {% for v in variantes %}
+              <li class="cms-variante-item">
+                <div>
+                  <strong>{{ v.contenance_ml }} ml</strong> — <span class="cms-price-highlight">{{ v.prix }} €</span><br>
+                  <span class="cms-text-sub">Stock : {{ v.stock }} unité{{ v.stock|pluralize }}</span>
+                </div>
+                {% if v.stock > 0 %}
+                  <span class="cms-badge cms-badge--success">En stock</span>
+                {% else %}
+                  <span class="cms-badge cms-badge--warning">Rupture</span>
+                {% endif %}
+              </li>
+            {% empty %}
+              <li class="cms-variante-item">Aucune contenance configurée.</li>
+            {% endfor %}
+          </ul>
+
+          <form method="post" style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--ligne-douce);">
+            {% csrf_token %}
+            <input type="hidden" name="action_variante" value="1">
+            <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Ajouter une Contenance</h3>
+            <div class="champ-groupe">
+              <label>Volume (ml)</label>
+              {{ variante_form.contenance_ml }}
+            </div>
+            <div class="champ-groupe" style="margin-top: 0.5rem;">
+              <label>Prix (€)</label>
+              {{ variante_form.prix }}
+            </div>
+            <div class="champ-groupe" style="margin-top: 0.5rem;">
+              <label>Stock initial</label>
+              {{ variante_form.stock }}
+            </div>
+            <button class="bouton bouton--secondaire bouton--pill" type="submit" style="margin-top: 1rem; width: 100%;">+ Ajouter Contenance</button>
+          </form>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+{% endblock %}

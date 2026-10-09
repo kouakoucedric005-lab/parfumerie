@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block titre %}Gestion des Collections - CMS {{ NOM_SITE }}{% endblock %}
+
+{% block contenu %}
+  <section class="conteneur section">
+    <div class="cms-header">
+      <div>
+        <a class="lien-discret" href="{% url 'catalogue:cms_dashboard' %}">← Tableau de Bord CMS</a>
+        <h1 class="section__titre">Gestion des Collections</h1>
+      </div>
+    </div>
+
+    <div class="cms-form-grid">
+      {# Liste des collections #}
+      <div class="cms-block">
+        <h2>Collections Existantes</h2>
+        <table class="cms-table">
+          <thead>
+            <tr>
+              <th>Ordre</th>
+              <th>Nom de la Collection</th>
+              <th>Description</th>
+              <th>Nombre de Parfums</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for c in collections %}
+              <tr>
+                <td><strong>#{{ c.ordre }}</strong></td>
+                <td><strong>{{ c.nom }}</strong></td>
+                <td>{{ c.description|default:"—" }}</td>
+                <td><span class="cms-badge cms-badge--accent">{{ c.nb_parfums }} parfum{{ c.nb_parfums|pluralize }}</span></td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="4" class="text-center">Aucune collection créée.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {# Formulaire d'ajout de collection #}
+      <form class="cms-sidebar-card" method="post">
+        {% csrf_token %}
+        <h2>Créer une Collection</h2>
+        <div class="champ-groupe">
+          <label>Nom de la Collection</label>
+          {{ form.nom }}
+        </div>
+        <div class="champ-groupe" style="margin-top: 0.8rem;">
+          <label>Description</label>
+          {{ form.description }}
+        </div>
+        <div class="champ-groupe" style="margin-top: 0.8rem;">
+          <label>Ordre d'affichage</label>
+          {{ form.ordre }}
+        </div>
+        <button class="bouton bouton--pill" type="submit" style="margin-top: 1.5rem; width: 100%;">+ Créer la Collection</button>
+      </form>
+    </div>
+  </section>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% load static %}<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titre %}{{ NOM_SITE }}{% endblock %}</title>
+  <meta name="description" content="{% block description %}Parfums pour femme, homme et mixtes : découvrez les fragrances et leurs notes olfactives.{% endblock %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+  <script>document.documentElement.classList.add('js');</script>
+  <script src="{% static 'js/site.js' %}" defer></script>
+</head>
+<body>
+  <a class="lien-evitement" href="#contenu">Aller au contenu</a>
+
+  <header class="entete">
+    <div class="conteneur entete__barre">
+      <button class="menu__bouton" type="button" aria-expanded="false" aria-controls="navigation">Menu</button>
+
+      <a class="logo" href="{% url 'catalogue:accueil' %}">{{ NOM_SITE }}</a>
+
+      <form class="recherche" action="{% url 'catalogue:liste' %}" method="get" role="search">
+        <label class="sr-only" for="recherche-q">Rechercher un parfum</label>
+        <input id="recherche-q" type="search" name="q" placeholder="Rechercher un parfum ou une marque" value="{{ filtres.q|default:'' }}">
+        <button type="submit" class="recherche__bouton">Rechercher</button>
+      </form>
+
+      <a class="panier-lien" href="{% url 'panier:detail' %}">
+        Panier
+        <span class="badge" aria-label="{{ panier_nb }} article{{ panier_nb|pluralize }} dans le panier">{{ panier_nb }}</span>
+      </a>
+
+      <nav class="nav" id="navigation" aria-label="Navigation principale">
+        <a href="{% url 'catalogue:liste' %}">Tous les parfums</a>
+        <a href="{% url 'catalogue:liste' %}?genre=femme">Femme</a>
+        <a href="{% url 'catalogue:liste' %}?genre=homme">Homme</a>
+        <a href="{% url 'catalogue:liste' %}?genre=mixte">Mixte</a>
+        <a href="{% url 'catalogue:cms_dashboard' %}" style="color: var(--accent-texte); font-weight: 700;">⚙️ Espace CMS</a>
+      </nav>
+    </div>
+  </header>
+
+  {% if messages %}
+    <div class="conteneur messages" role="status">
+      {% for message in messages %}
+        <p class="message message--{{ message.level_tag }}">{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <main id="contenu">
+    {% block contenu %}{% endblock %}
+  </main>
+
+  {# Bandeau de réassurance : adapter les textes aux engagements réels de la boutique. #}
+  <section class="reassurance" aria-label="Nos engagements">
+    <ul class="conteneur reassurance__liste">
+      <li><strong>Produits authentiques</strong><span>Des parfums d'origine, sélectionnés avec soin.</span></li>
+      <li><strong>Paiement sécurisé</strong><span>Vos données bancaires restent protégées.</span></li>
+      <li><strong>Livraison suivie</strong><span>Suivez votre colis jusqu'à votre porte.</span></li>
+      <li><strong>Retours simples</strong><span>Un souci ? Nous trouvons une solution.</span></li>
+    </ul>
+  </section>
+
+  <footer class="pied">
+    <div class="conteneur pied__contenu">
+      <div class="pied__top">
+        <p class="pied__marque">{{ NOM_SITE }}</p>
+        <nav aria-label="Pied de page">
+          <a href="{% url 'catalogue:liste' %}">Catalogue</a>
+          <a href="{% url 'panier:detail' %}">Panier</a>
+        </nav>
+      </div>
+      <div class="pied__bottom">
+        <p class="pied__droits">&copy; {% now "Y" %} {{ NOM_SITE }}. Tous droits réservés.</p>
+        <p class="pied__auteur">Réalisé par <strong>Kouakou Cedric</strong></p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

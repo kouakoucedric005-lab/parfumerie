@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block titre %}Gestion des Parfums - CMS {{ NOM_SITE }}{% endblock %}
+
+{% block contenu %}
+  <section class="conteneur section">
+    <div class="cms-header">
+      <div>
+        <a class="lien-discret" href="{% url 'catalogue:cms_dashboard' %}">← Tableau de Bord CMS</a>
+        <h1 class="section__titre">Gestion du Catalogue Parfums</h1>
+      </div>
+      <a class="bouton bouton--pill" href="{% url 'catalogue:cms_parfum_ajouter' %}">+ Ajouter un Parfum</a>
+    </div>
+
+    <form class="filtres-card" method="get">
+      <div class="recherche" style="max-width: 500px;">
+        <input type="search" name="q" placeholder="Rechercher par nom, marque..." value="{{ q }}">
+        <button type="submit" class="recherche__bouton">Rechercher</button>
+      </div>
+    </form>
+
+    <div class="cms-block">
+      <table class="cms-table">
+        <thead>
+          <tr>
+            <th>Visuel</th>
+            <th>Nom du Parfum</th>
+            <th>Marque</th>
+            <th>Famille</th>
+            <th>Genre</th>
+            <th>Contenances</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in parfums %}
+            <tr>
+              <td style="width: 70px;">
+                {% if p.image %}
+                  <img src="{{ p.image.url }}" alt="{{ p.nom }}" class="cms-thumb">
+                {% else %}
+                  <div class="cms-thumb-empty">{{ p.nom|slice:":1" }}</div>
+                {% endif %}
+              </td>
+              <td>
+                <a href="{{ p.get_absolute_url }}" target="_blank"><strong>{{ p.nom }}</strong></a>
+                {% if p.nouveau %}<span class="cms-badge cms-badge--info">Nouveau</span>{% endif %}
+                {% if p.meilleure_vente %}<span class="cms-badge cms-badge--accent">Best-Seller</span>{% endif %}
+              </td>
+              <td><strong>{{ p.marque }}</strong></td>
+              <td>{{ p.get_famille_display }}</td>
+              <td>{{ p.get_genre_display }}</td>
+              <td>{{ p.nb_variantes }} variante{{ p.nb_variantes|pluralize }}</td>
+              <td>
+                {% if p.actif %}
+                  <span class="cms-badge cms-badge--success">En ligne</span>
+                {% else %}
+                  <span class="cms-badge cms-badge--muted">Masqué</span>
+                {% endif %}
+              </td>
+              <td>
+                <div class="cms-actions-cell" style="display: flex; gap: 0.4rem; align-items: center;">
+                  <a href="{% url 'catalogue:cms_parfum_image' pk=p.pk %}" class="bouton bouton--pill" style="padding: 0.35rem 0.75rem; font-size: 0.78rem; background: var(--accent-texte); border-color: var(--accent-texte);">📸 Photo</a>
+                  <a href="{% url 'catalogue:cms_parfum_editer' pk=p.pk %}" class="bouton bouton--secondaire bouton--pill" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">Éditer</a>
+                  <a href="{% url 'catalogue:cms_parfum_supprimer' pk=p.pk %}" class="lien-discret" style="color: var(--erreur); font-size: 0.78rem;">Supprimer</a>
+                </div>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="8" class="text-center">Aucun parfum ne correspond à votre recherche.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% endblock %}

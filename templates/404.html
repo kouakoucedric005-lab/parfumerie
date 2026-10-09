@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block titre %}Page introuvable - {{ NOM_SITE }}{% endblock %}
+
+{% block contenu %}
+  <section class="conteneur vide">
+    <h1>Cette page est introuvable</h1>
+    <p>Le lien est peut-être incorrect, ou le parfum n'est plus disponible.</p>
+    <p><a class="bouton" href="{% url 'catalogue:liste' %}">Voir le catalogue</a></p>
+  </section>
+{% endblock %}

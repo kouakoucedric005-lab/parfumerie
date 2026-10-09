@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block titre %}Espace CMS / Dashboard - {{ NOM_SITE }}{% endblock %}
+
+{% block contenu %}
+  <section class="conteneur section">
+    <div class="cms-header">
+      <div>
+        <span class="sub-titre">GESTION DU SITE</span>
+        <h1 class="section__titre">Tableau de Bord CMS</h1>
+      </div>
+      <div class="cms-actions">
+        <a class="bouton bouton--pill" href="{% url 'catalogue:cms_parfum_ajouter' %}">+ Nouveau Parfum</a>
+        <a class="bouton bouton--secondaire bouton--pill" href="{% url 'catalogue:cms_collections' %}">Gérer les Collections</a>
+      </div>
+    </div>
+
+    {# Grille des statistiques du CMS #}
+    <div class="cms-stats-grid">
+      <div class="stat-card">
+        <span class="stat-card__valeur">{{ total_parfums }}</span>
+        <span class="stat-card__label">Parfums Répertoriés</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__valeur">{{ total_actifs }}</span>
+        <span class="stat-card__label">Parfums En Ligne</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__valeur">{{ total_marques }}</span>
+        <span class="stat-card__label">Maisons de Parfum</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__valeur">{{ total_collections }}</span>
+        <span class="stat-card__label">Collections Exclusives</span>
+      </div>
+    </div>
+
+    <div class="cms-main-grid">
+      {# Derniers parfums ajoutés #}
+      <div class="cms-block">
+        <div class="cms-block__header">
+          <h2>Dernières Fragrances Ajoutées</h2>
+          <a class="lien-fleche" href="{% url 'catalogue:cms_parfum_liste' %}">Voir la liste complète &rarr;</a>
+        </div>
+
+        <table class="cms-table">
+          <thead>
+            <tr>
+              <th>Visuel</th>
+              <th>Parfum &amp; Marque</th>
+              <th>Famille</th>
+              <th>Genre</th>
+              <th>Statut</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in derniers_parfums %}
+              <tr>
+                <td style="width: 60px;">
+                  {% if p.image %}
+                    <img src="{{ p.image.url }}" alt="{{ p.nom }}" class="cms-thumb">
+                  {% else %}
+                    <div class="cms-thumb-empty">{{ p.nom|slice:":1" }}</div>
+                  {% endif %}
+                </td>
+                <td>
+                  <strong>{{ p.nom }}</strong><br>
+                  <span class="cms-text-sub">{{ p.marque }}</span>
+                </td>
+                <td>{{ p.get_famille_display }}</td>
+                <td>{{ p.get_genre_display }}</td>
+                <td>
+                  {% if p.actif %}
+                    <span class="cms-badge cms-badge--success">En Ligne</span>
+                  {% else %}
+                    <span class="cms-badge cms-badge--muted">Masqué</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <a href="{% url 'catalogue:cms_parfum_editer' pk=p.pk %}" class="cms-btn-icon" title="Éditer">✏️ Éditer</a>
+                </td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="6" class="text-center">Aucun parfum enregistré.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {# Alertes de stock #}
+      <div class="cms-block">
+        <div class="cms-block__header">
+          <h2>Alertes Rupture de Stock</h2>
+        </div>
+        <ul class="cms-alert-list">
+          {% for r in ruptures %}
+            <li class="cms-alert-item">
+              <div>
+                <strong>{{ r.parfum.nom }}</strong> ({{ r.contenance_ml }} ml)<br>
+                <span class="cms-text-sub">{{ r.parfum.marque }}</span>
+              </div>
+              <a href="{% url 'catalogue:cms_parfum_editer' pk=r.parfum.pk %}" class="cms-badge cms-badge--warning">Réapprovisionner</a>
+            </li>
+          {% empty %}
+            <li class="cms-alert-item text-center">Toutes les contenances sont en stock !</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </section>
+{% endblock %}

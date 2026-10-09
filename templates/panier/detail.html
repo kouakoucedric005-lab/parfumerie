@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block titre %}Panier - {{ NOM_SITE }}{% endblock %}
+
+{% block contenu %}
+  <section class="conteneur section">
+    <h1 class="section__titre">Votre panier</h1>
+
+    {% if panier.lignes %}
+      <div class="panier">
+        <ul class="panier__lignes">
+          {% for ligne in panier.lignes %}
+            <li class="ligne">
+              <a class="ligne__visuel" href="{{ ligne.parfum.get_absolute_url }}" tabindex="-1" aria-hidden="true">
+                {% if ligne.parfum.image %}
+                  <img src="{{ ligne.parfum.image.url }}" alt="" loading="lazy">
+                {% else %}
+                  <span class="carte__vide">{{ ligne.parfum.nom|slice:":1" }}</span>
+                {% endif %}
+              </a>
+
+              <div class="ligne__infos">
+                <p class="carte__marque">{{ ligne.parfum.marque }}</p>
+                <h2 class="ligne__nom"><a href="{{ ligne.parfum.get_absolute_url }}">{{ ligne.parfum.nom }}</a></h2>
+                <p class="carte__detail">{{ ligne.variante.contenance_ml }} ml · {{ ligne.prix_unitaire|floatformat:2 }}&nbsp;{{ DEVISE }}</p>
+
+                <div class="ligne__actions">
+                  <form method="post" action="{% url 'panier:modifier' %}" class="ligne__quantite">
+                    {% csrf_token %}
+                    <input type="hidden" name="variante" value="{{ ligne.variante.pk }}">
+                    <label>Quantité
+                      <input type="number" name="quantite" value="{{ ligne.quantite }}" min="0" max="{{ QUANTITE_MAX }}">
+                    </label>
+                    <button class="bouton bouton--secondaire" type="submit">Mettre à jour</button>
+                  </form>
+
+                  <form method="post" action="{% url 'panier:retirer' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="variante" value="{{ ligne.variante.pk }}">
+                    <button class="lien-discret lien-discret--bouton" type="submit">Retirer</button>
+                  </form>
+                </div>
+              </div>
+
+              <p class="ligne__total">{{ ligne.total|floatformat:2 }}&nbsp;{{ DEVISE }}</p>
+            </li>
+          {% endfor %}
+        </ul>
+
+        <aside class="recap" aria-label="Récapitulatif">
+          <h2>Récapitulatif</h2>
+          <dl>
+            <div><dt>Sous-total</dt><dd>{{ panier.sous_total|floatformat:2 }}&nbsp;{{ DEVISE }}</dd></div>
+            <div><dt>Livraison</dt><dd>Calculée à l'étape suivante</dd></div>
+          </dl>
+          {# La commande en ligne sera ajoutée à l'étape suivante du projet. #}
+          <button class="bouton bouton--plein" type="button" disabled>Commander (bientôt disponible)</button>
+          <p><a class="lien-discret" href="{% url 'catalogue:liste' %}">Continuer mes achats</a></p>
+        </aside>
+      </div>
+    {% else %}
+      <div class="vide">
+        <h2>Votre panier est vide</h2>
+        <p>Découvrez nos parfums et ajoutez vos préférés.</p>
+        <p><a class="bouton" href="{% url 'catalogue:liste' %}">Voir le catalogue</a></p>
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}

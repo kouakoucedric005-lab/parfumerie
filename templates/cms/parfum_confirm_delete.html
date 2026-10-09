@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block titre %}Confirmer la suppression - CMS {{ NOM_SITE }}{% endblock %}
+
+{% block contenu %}
+  <section class="conteneur section" style="max-width: 600px;">
+    <div class="vide-card">
+      <div class="vide-card__icon" style="color: var(--erreur);">⚠️</div>
+      <h1 class="section__titre">Confirmer la Suppression</h1>
+      <p>Êtes-vous sûr de vouloir supprimer définitivement le parfum <strong>« {{ parfum.nom }} »</strong> ({{ parfum.marque }}) du catalogue ?</p>
+      <p class="cms-text-sub">Toutes les contenances et les images associées seront également effacées.</p>
+
+      <form method="post" style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;">
+        {% csrf_token %}
+        <button class="bouton bouton--pill" type="submit" style="background: var(--erreur); border-color: var(--erreur);">Oui, Supprimer définitivement</button>
+        <a class="bouton bouton--secondaire bouton--pill" href="{% url 'catalogue:cms_parfum_liste' %}">Annuler</a>
+      </form>
+    </div>
+  </section>
+{% endblock %}

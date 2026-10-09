@@ -1,0 +1,46 @@
+<article class="carte">
+  <a class="carte__visuel" href="{{ parfum.get_absolute_url }}" tabindex="-1" aria-hidden="true">
+    {% if parfum.image %}
+      <img src="{{ parfum.image.url }}" alt="{{ parfum.nom }}" loading="lazy">
+    {% else %}
+      <div class="carte__placeholder">
+        <span class="carte__placeholder-marque">{{ parfum.marque }}</span>
+        <span class="carte__placeholder-nom">{{ parfum.nom }}</span>
+        <span class="carte__placeholder-famille">{{ parfum.get_famille_display }}</span>
+      </div>
+    {% endif %}
+    {% if parfum.nouveau %}<span class="etiquette etiquette--nouveau">Nouveau</span>{% endif %}
+    {% if parfum.meilleure_vente and not parfum.nouveau %}<span class="etiquette etiquette--bestseller">Best-Seller</span>{% endif %}
+  </a>
+
+  <div class="carte__corps">
+    <span class="carte__marque">{{ parfum.marque }}</span>
+    <h3 class="carte__nom"><a href="{{ parfum.get_absolute_url }}">{{ parfum.nom }}</a></h3>
+    <div class="carte__meta">
+      <span class="carte__tag">{{ parfum.get_concentration_display }}</span>
+      <span class="carte__dot">•</span>
+      <span class="carte__tag">{{ parfum.get_genre_display }}</span>
+    </div>
+    <p class="carte__prix">
+      {% if parfum.prix_a_partir_de %}
+        <span class="carte__prix-label">À partir de</span> {{ parfum.prix_a_partir_de|floatformat:2 }}&nbsp;{{ DEVISE }}
+      {% else %}
+        <span class="carte__prix-indisponible">Bientôt disponible</span>
+      {% endif %}
+    </p>
+  </div>
+
+  {% with variante=parfum.variante_par_defaut %}
+    {% if variante %}
+      <form class="carte__ajout" method="post" action="{% url 'panier:ajouter' %}">
+        {% csrf_token %}
+        <input type="hidden" name="variante" value="{{ variante.pk }}">
+        <input type="hidden" name="quantite" value="1">
+        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+        <button class="bouton bouton--pill bouton--plein" type="submit" aria-label="Ajouter {{ parfum.nom }} ({{ variante.contenance_ml }} ml) au panier">+ Ajout rapide ({{ variante.contenance_ml }} ml)</button>
+      </form>
+    {% elif parfum.prix_a_partir_de %}
+      <p class="carte__rupture">Épuisé</p>
+    {% endif %}
+  {% endwith %}
+</article>

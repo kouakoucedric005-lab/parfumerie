@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block titre %}Changer l'image - {{ parfum.nom }} - CMS {{ NOM_SITE }}{% endblock %}
+
+{% block contenu %}
+  <section class="conteneur section" style="max-width: 850px;">
+    <div class="cms-header">
+      <div>
+        <a class="lien-discret" href="{% url 'catalogue:cms_parfum_liste' %}">← Retour à la liste des parfums</a>
+        <h1 class="section__titre">Changer la Photo du Parfum</h1>
+        <p class="cms-text-sub">Parfum : <strong>{{ parfum.nom }}</strong> ({{ parfum.marque }})</p>
+      </div>
+    </div>
+
+    <form class="cms-form-card" method="post" enctype="multipart/form-data" style="padding: 2.5rem;">
+      {% csrf_token %}
+
+      <div class="cms-image-uploader-grid">
+        {# Image Actuelle #}
+        <div class="cms-image-preview-box">
+          <span class="sub-titre">Image Actuelle</span>
+          {% if parfum.image %}
+            <div class="cms-image-wrapper">
+              <img src="{{ parfum.image.url }}" alt="{{ parfum.nom }}" id="image-actuelle">
+            </div>
+            <p class="cms-text-sub" style="margin-top: 0.5rem; word-break: break-all;">Fichier : {{ parfum.image.name }}</p>
+          {% else %}
+            <div class="cms-image-wrapper cms-image-wrapper--empty">
+              <span>Aucune image</span>
+            </div>
+          {% endif %}
+        </div>
+
+        {# Nouvelle Image / Zone d'envoi #}
+        <div class="cms-image-upload-box">
+          <span class="sub-titre">Nouvelle Image (.png, .jpg, .webp)</span>
+          <div class="cms-dropzone" onclick="document.getElementById('file-input').click();">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent-texte)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 0.8rem;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <p style="font-weight: 600; margin-bottom: 0.3rem;">Cliquez pour choisir une photo</p>
+            <p class="cms-text-sub" id="filename-preview">Formats acceptés : JPG, PNG, WEBP</p>
+            <input type="file" name="image" id="file-input" accept="image/*" style="display: none;" onchange="previewSelectedFile(event);">
+          </div>
+
+          <div id="live-preview-container" style="display: none; margin-top: 1.2rem; text-align: center;">
+            <span class="sub-titre">Aperçu avant enregistrement :</span>
+            <div class="cms-image-wrapper" style="margin: 0.5rem auto;">
+              <img id="live-preview-img" src="" alt="Aperçu nouvelle photo">
+            </div>
+          </div>
+
+          <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+            <button class="bouton bouton--pill" type="submit" style="width: 100%;">💾 Enregistrer la Nouvelle Image</button>
+            <a class="bouton bouton--secondaire bouton--pill" href="{% url 'catalogue:cms_parfum_liste' %}">Annuler</a>
+          </div>
+        </div>
+      </div>
+    </form>
+  </section>
+
+  <script>
+    function previewSelectedFile(event) {
+      const input = event.target;
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        document.getElementById('filename-preview').innerText = 'Fichier sélectionné : ' + file.name;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('live-preview-img').src = e.target.result;
+          document.getElementById('live-preview-container').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  </script>
+{% endblock %}

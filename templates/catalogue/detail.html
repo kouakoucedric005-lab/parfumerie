@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block titre %}{{ parfum.nom }} - {{ parfum.marque }} - {{ NOM_SITE }}{% endblock %}
+{% block description %}{{ parfum.nom }} de {{ parfum.marque }} : {{ parfum.get_concentration_display|lower }}, famille {{ parfum.get_famille_display|lower }}.{% endblock %}
+
+{% block contenu %}
+  <section class="conteneur produit">
+
+    <div class="galerie">
+      {% if parfum.image %}
+        <img class="galerie__principale" src="{{ parfum.image.url }}" alt="Flacon {{ parfum.nom }}">
+      {% else %}
+        <div class="galerie__principale galerie__vide" aria-hidden="true">{{ parfum.nom|slice:":1" }}</div>
+      {% endif %}
+      {% if parfum.images.all %}
+        <ul class="galerie__vignettes">
+          {% for photo in parfum.images.all %}
+            <li><img src="{{ photo.image.url }}" alt="{{ photo.legende|default:parfum.nom }}" loading="lazy"></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+
+    <div class="produit__infos">
+      <p class="produit__marque">{{ parfum.marque }}</p>
+      <h1 class="produit__nom">{{ parfum.nom }}</h1>
+      <ul class="tags">
+        <li>{{ parfum.get_concentration_display }}</li>
+        <li>{{ parfum.get_famille_display }}</li>
+        <li>{{ parfum.get_genre_display }}</li>
+      </ul>
+
+      {% if variantes %}
+        <p class="produit__prix"><span id="prix-affiche" data-devise="{{ DEVISE }}">{{ choisie.prix|floatformat:2 }} {{ DEVISE }}</span></p>
+
+        <form method="post" action="{% url 'panier:ajouter' %}" class="achat">
+          {% csrf_token %}
+          <fieldset class="contenances">
+            <legend>Contenance</legend>
+            {% for v in variantes %}
+              <label class="contenance {% if not v.en_stock %}contenance--epuisee{% endif %}">
+                <input type="radio" name="variante" value="{{ v.pk }}"
+                       data-prix="{{ v.prix|floatformat:2 }}"
+                       {% if v == choisie %}checked{% endif %}
+                       {% if not v.en_stock %}disabled{% endif %}>
+                <span>{{ v.contenance_ml }} ml{% if not v.en_stock %} (épuisé){% endif %}</span>
+              </label>
+            {% endfor %}
+          </fieldset>
+
+          {% if parfum.variante_par_defaut %}
+            <div class="achat__ligne">
+              <label class="quantite">Quantité
+                <input type="number" name="quantite" value="1" min="1" max="{{ QUANTITE_MAX }}">
+              </label>
+              <button class="bouton bouton--plein" type="submit">Ajouter au panier</button>
+            </div>
+            <p class="stock">
+              {% if choisie.stock <= 3 and choisie.stock > 0 %}Plus que {{ choisie.stock }} en stock pour {{ choisie.contenance_ml }} ml.{% else %}En stock.{% endif %}
+            </p>
+          {% else %}
+            <p class="stock stock--rupture">Ce parfum est actuellement indisponible.</p>
+          {% endif %}
+        </form>
+      {% else %}
+        <p class="stock stock--rupture">Ce parfum n'est pas encore disponible à la vente.</p>
+      {% endif %}
+
+      {% if parfum.description %}
+        <div class="produit__texte">
+          <h2>Description</h2>
+          <p>{{ parfum.description|linebreaksbr }}</p>
+        </div>
+      {% endif %}
+
+      {% if parfum.notes_tete_liste or parfum.notes_coeur_liste or parfum.notes_fond_liste %}
+        <div class="produit__texte">
+          <h2>Pyramide olfactive</h2>
+          <div class="pyramide">
+            {% if parfum.notes_tete_liste %}
+              <div class="pyramide__niveau">
+                <h3>Notes de tête</h3>
+                <p>{{ parfum.notes_tete_liste|join:" · " }}</p>
+              </div>
+            {% endif %}
+            {% if parfum.notes_coeur_liste %}
+              <div class="pyramide__niveau">
+                <h3>Notes de cœur</h3>
+                <p>{{ parfum.notes_coeur_liste|join:" · " }}</p>
+              </div>
+            {% endif %}
+            {% if parfum.notes_fond_liste %}
+              <div class="pyramide__niveau">
+                <h3>Notes de fond</h3>
+                <p>{{ parfum.notes_fond_liste|join:" · " }}</p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+
+      {# Emplacement réservé : livraison et retours résumés, puis avis clients (phase 2). #}
+    </div>
+  </section>
+
+  {% if similaires %}
+    <section class="conteneur section">
+      <h2 class="section__titre">Parfums similaires</h2>
+      <div class="grille">
+        {% for parfum in similaires %}{% include "catalogue/_carte.html" %}{% endfor %}
+      </div>
+    </section>
+  {% endif %}
+{% endblock %}

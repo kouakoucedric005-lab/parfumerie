@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block titre %}Catalogue Multi-Marques - {{ NOM_SITE }}{% endblock %}
+
+{% block contenu %}
+  <section class="conteneur section">
+    <div class="catalogue-entete">
+      <div>
+        <span class="sub-titre">HAUTE PARFUMERIE</span>
+        <h1 class="section__titre">Toutes Nos Fragrances</h1>
+      </div>
+      <p class="compteur-badge">{{ nb_resultats }} parfum{{ nb_resultats|pluralize }} répertorié{{ nb_resultats|pluralize }}</p>
+    </div>
+
+    <form class="filtres-card" method="get" action="{% url 'catalogue:liste' %}">
+      <div class="filtres-card__header">
+        <span class="filtres-card__titre">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 6px;"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+          Filtres &amp; Recherche
+        </span>
+        {% if filtres_actifs %}
+          <a class="lien-discret lien-discret--reset" href="{% url 'catalogue:liste' %}">Réinitialiser les filtres ✕</a>
+        {% endif %}
+      </div>
+
+      <div class="filtres__grille">
+        <label class="champ-groupe">Marque
+          <select name="marque">
+            <option value="">Toutes les marques</option>
+            {% for marque in marques %}
+              <option value="{{ marque }}" {% if filtres.marque == marque %}selected{% endif %}>{{ marque }}</option>
+            {% endfor %}
+          </select>
+        </label>
+
+        <label class="champ-groupe">Genre
+          <select name="genre">
+            <option value="">Tous les genres</option>
+            {% for code, libelle in genres %}
+              <option value="{{ code }}" {% if filtres.genre == code %}selected{% endif %}>{{ libelle }}</option>
+            {% endfor %}
+          </select>
+        </label>
+
+        <label class="champ-groupe">Famille Olfactive
+          <select name="famille">
+            <option value="">Toutes les familles</option>
+            {% for code, libelle in familles %}
+              <option value="{{ code }}" {% if filtres.famille == code %}selected{% endif %}>{{ libelle }}</option>
+            {% endfor %}
+          </select>
+        </label>
+
+        {% if collections %}
+          <label class="champ-groupe">Collection
+            <select name="collection">
+              <option value="">Toutes les collections</option>
+              {% for collection in collections %}
+                <option value="{{ collection.slug }}" {% if filtres.collection == collection.slug %}selected{% endif %}>{{ collection.nom }}</option>
+              {% endfor %}
+            </select>
+          </label>
+        {% endif %}
+
+        <label class="champ-groupe">Contenance
+          <select name="contenance">
+            <option value="">Toutes contenances</option>
+            {% for ml in contenances %}
+              <option value="{{ ml }}" {% if filtres.contenance == ml|stringformat:"s" %}selected{% endif %}>{{ ml }} ml</option>
+            {% endfor %}
+          </select>
+        </label>
+
+        <label class="champ-groupe">Prix Max ({{ DEVISE }})
+          <input type="number" name="prix_max" min="0" step="5" placeholder="Ex: 150" value="{{ filtres.prix_max }}">
+        </label>
+
+        <label class="champ-groupe">Trier par
+          <select name="tri">
+            {% for cle, libelle in tris %}
+              <option value="{{ cle }}" {% if filtres.tri == cle %}selected{% endif %}>{{ libelle }}</option>
+            {% endfor %}
+          </select>
+        </label>
+      </div>
+
+      {% if filtres.q %}<input type="hidden" name="q" value="{{ filtres.q }}">{% endif %}
+
+      <div class="filtres__actions">
+        <button class="bouton bouton--pill" type="submit">Appliquer les filtres</button>
+      </div>
+    </form>
+
+    {% if page.object_list %}
+      <div class="grille">
+        {% for parfum in page.object_list %}{% include "catalogue/_carte.html" %}{% endfor %}
+      </div>
+
+      {% if page.has_other_pages %}
+        <nav class="pagination" aria-label="Pagination">
+          {% if page.has_previous %}
+            <a class="pagination__btn" href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page.previous_page_number }}">‹ Précédent</a>
+          {% endif %}
+          <span class="pagination__info">Page {{ page.number }} sur {{ page.paginator.num_pages }}</span>
+          {% if page.has_next %}
+            <a class="pagination__btn" href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page.next_page_number }}">Suivant ›</a>
+          {% endif %}
+        </nav>
+      {% endif %}
+    {% else %}
+      <div class="vide-card">
+        <div class="vide-card__icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent-texte)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <h2>Aucun parfum ne correspond à vos critères</h2>
+        <p>Essayez de réinitialiser les filtres ou de modifier votre recherche.</p>
+        <a class="bouton bouton--pill" href="{% url 'catalogue:liste' %}">Voir toutes les fragrances</a>
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}

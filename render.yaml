@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: parfumerie-haute-couture
+    env: python
+    buildCommand: ./build.sh
+    startCommand: gunicorn config.wsgi:application
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.10
+      - key: DJANGO_DEBUG
+        value: "1"

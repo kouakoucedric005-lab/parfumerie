@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+staticfiles/
+.DS_Store
+.idea/
+.vscode/
+generate_privee.py

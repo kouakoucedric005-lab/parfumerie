@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block contenu %}
+  {# Hero section Collection Privée #}
+  <section class="hero">
+    <div class="conteneur hero__contenu">
+      <span class="hero__badge">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/></svg>
+        COLLECTIONS PRIVÉES &amp; HAUTE PARFUMERIE
+      </span>
+      <h1 class="hero__titre">L'Élégance Rare des Parfums d'Exception</h1>
+      <p class="hero__texte">Découvrez les nectars précieux des plus grands laboratoires olfactifs privés : Dior Collection Privée, Tom Ford Private Blend, Les Exclusifs de Chanel, YSL Le Vestiaire, Guerlain Art &amp; Matière...</p>
+      <div class="hero__actions">
+        <a class="bouton" href="{% url 'catalogue:liste' %}">Découvrir la Collection Privée</a>
+        <a class="bouton bouton--secondaire" href="{% url 'catalogue:liste' %}?genre=mixte">Extraits Mixtes</a>
+      </div>
+    </div>
+  </section>
+
+  {# Marquee / Bandeau des grandes Collections Privées #}
+  <section class="marques-strip">
+    <div class="conteneur">
+      <p class="marques-strip__titre">LES MAISONS DE COLLECTION PRIVÉE</p>
+      <div class="marques-strip__liste">
+        <a href="{% url 'catalogue:liste' %}?marque=Dior+Collection+Privée" class="marque-item">DIOR COLLECTION PRIVÉE</a>
+        <a href="{% url 'catalogue:liste' %}?marque=Tom+Ford+Private+Blend" class="marque-item">TOM FORD PRIVATE BLEND</a>
+        <a href="{% url 'catalogue:liste' %}?marque=Chanel+Les+Exclusifs" class="marque-item">LES EXCLUSIFS DE CHANEL</a>
+        <a href="{% url 'catalogue:liste' %}?marque=YSL+Le+Vestiaire" class="marque-item">LE VESTIAIRE YSL</a>
+        <a href="{% url 'catalogue:liste' %}?marque=Guerlain+Privée" class="marque-item">GUERLAIN L'ART &amp; LA MATIÈRE</a>
+        <a href="{% url 'catalogue:liste' %}?marque=Armani+Privé" class="marque-item">ARMANI / PRIVÉ</a>
+      </div>
+    </div>
+  </section>
+
+  {% if nouveautes %}
+    <section class="conteneur section">
+      <div class="section__entete">
+        <div>
+          <span class="sub-titre">Nouveautés Privées</span>
+          <h2 class="section__titre">Dernières Créations d'Élixir</h2>
+        </div>
+        <a class="lien-fleche" href="{% url 'catalogue:liste' %}">Voir toute la collection &rarr;</a>
+      </div>
+      <div class="grille">
+        {% for parfum in nouveautes %}{% include "catalogue/_carte.html" %}{% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  <section class="conteneur section">
+    <div class="section__entete text-center">
+      <span class="sub-titre">Inspiration</span>
+      <h2 class="section__titre">Parcourir par Famille Olfactive</h2>
+    </div>
+    <ul class="familles">
+      {% for code, libelle in familles %}
+        <li>
+          <a class="famille" href="{% url 'catalogue:liste' %}?famille={{ code }}">
+            <span class="famille__icon">
+              {% if code == 'floral' %}
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2a4.5 4.5 0 0 0 0 9 4.5 4.5 0 0 0 0-9z"/><path d="M12 13a4.5 4.5 0 0 0 0 9 4.5 4.5 0 0 0 0-9z"/><path d="M2 12a4.5 4.5 0 0 0 9 0 4.5 4.5 0 0 0-9 0z"/><path d="M13 12a4.5 4.5 0 0 0 9 0 4.5 4.5 0 0 0-9 0z"/></svg>
+              {% elif code == 'boise' %}
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L4 14h5l-3 7h12l-3-7h5L12 2z"/></svg>
+              {% elif code == 'ambre' %}
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              {% elif code == 'frais' %}
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12c3-3 6-3 9 0s6 3 9 0"/><path d="M2 17c3-3 6-3 9 0s6 3 9 0"/><path d="M2 7c3-3 6-3 9 0s6 3 9 0"/></svg>
+              {% else %}
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.4 19 2c1 2 2 4.1 2 7a9 9 0 0 1-10 11z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+              {% endif %}
+            </span>
+            <span class="famille__nom">{{ libelle }}</span>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  {% if meilleures_ventes %}
+    <section class="conteneur section">
+      <div class="section__entete">
+        <div>
+          <span class="sub-titre">Jus Incontournables</span>
+          <h2 class="section__titre">Les Best-Sellers de Collection Privée</h2>
+        </div>
+        <a class="lien-fleche" href="{% url 'catalogue:liste' %}">Explorer le catalogue &rarr;</a>
+      </div>
+      <div class="grille">
+        {% for parfum in meilleures_ventes %}{% include "catalogue/_carte.html" %}{% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {% if collections %}
+    <section class="conteneur section section--collections">
+      <div class="section__entete">
+        <div>
+          <span class="sub-titre">Gamme Prestige</span>
+          <h2 class="section__titre">Nos Collections Privées d'Exception</h2>
+        </div>
+      </div>
+      <ul class="collections">
+        {% for collection in collections %}
+          <li class="collection">
+            <a href="{% url 'catalogue:liste' %}?collection={{ collection.slug }}">
+              <span class="collection__nom">{{ collection.nom }}</span>
+              {% if collection.description %}<span class="collection__texte">{{ collection.description }}</span>{% endif %}
+              <span class="collection__lien">Découvrir la collection &rarr;</span>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+{% endblock %}
