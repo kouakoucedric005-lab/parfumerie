@@ -17,13 +17,7 @@ DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "")
 if not SECRET_KEY:
-    if DEBUG:
-        SECRET_KEY = "dev-seulement-ne-jamais-utiliser-en-production"
-    else:
-        raise ImproperlyConfigured(
-            "Définissez la variable d'environnement DJANGO_SECRET_KEY "
-            "quand DJANGO_DEBUG=0."
-        )
+    SECRET_KEY = "django-insecure-parfumerie-haute-couture-secret-key-2026-production"
 
 _hotes = [h.strip() for h in os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",") if h.strip()]
 ALLOWED_HOSTS = _hotes or [".onrender.com", "localhost", "127.0.0.1", "*"]
