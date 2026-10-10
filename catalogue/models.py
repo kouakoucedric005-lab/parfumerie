@@ -87,6 +87,10 @@ class Parfum(models.Model):
         "notes de fond", max_length=200, blank=True, help_text="Séparées par des virgules."
     )
     image = models.ImageField("photo principale", upload_to="parfums/", blank=True)
+    image_url = models.URLField(
+        "URL image externe", max_length=500, blank=True,
+        help_text="URL d'une image externe (Unsplash, CDN…) utilisée si aucun fichier n'est uploadé."
+    )
     collection = models.ForeignKey(
         Collection,
         verbose_name="collection",

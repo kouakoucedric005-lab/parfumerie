@@ -9,6 +9,8 @@
     <div class="galerie">
       {% if parfum.image %}
         <img class="galerie__principale" src="{{ parfum.image.url }}" alt="Flacon {{ parfum.nom }}">
+      {% elif parfum.image_url %}
+        <img class="galerie__principale" src="{{ parfum.image_url }}" alt="Flacon {{ parfum.nom }}">
       {% else %}
         <div class="galerie__principale galerie__vide" aria-hidden="true">{{ parfum.nom|slice:":1" }}</div>
       {% endif %}
