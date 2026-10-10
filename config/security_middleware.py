@@ -21,7 +21,7 @@ class SecurityHeadersMiddleware:
             "default-src 'self'; "
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
             "font-src 'self' https://fonts.gstatic.com data:; "
-            "img-src 'self' data: blob:; "
+            "img-src 'self' data: blob: https://images.unsplash.com https://*.unsplash.com; "
             "script-src 'self' 'unsafe-inline'; "
             "object-src 'none';"
         )
