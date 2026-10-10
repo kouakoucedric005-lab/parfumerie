@@ -1,9 +1,9 @@
+{% load catalogue_tags %}
 <article class="carte">
   <a class="carte__visuel" href="{{ parfum.get_absolute_url }}" tabindex="-1" aria-hidden="true">
-    {% if parfum.image %}
-      <img src="{{ parfum.image.url }}" alt="{{ parfum.nom }}" loading="lazy">
-    {% elif parfum.image_url %}
-      <img src="{{ parfum.image_url }}" alt="{{ parfum.nom }}" loading="lazy">
+    {% image_src parfum as src %}
+    {% if src %}
+      <img src="{{ src }}" alt="{{ parfum.nom }}" loading="lazy">
     {% else %}
       <div class="carte__placeholder">
         <span class="carte__placeholder-marque">{{ parfum.marque }}</span>

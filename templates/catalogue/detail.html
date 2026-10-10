@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load catalogue_tags %}
 
 {% block titre %}{{ parfum.nom }} - {{ parfum.marque }} - {{ NOM_SITE }}{% endblock %}
 {% block description %}{{ parfum.nom }} de {{ parfum.marque }} : {{ parfum.get_concentration_display|lower }}, famille {{ parfum.get_famille_display|lower }}.{% endblock %}
@@ -7,13 +8,13 @@
   <section class="conteneur produit">
 
     <div class="galerie">
-      {% if parfum.image %}
-        <img class="galerie__principale" src="{{ parfum.image.url }}" alt="Flacon {{ parfum.nom }}">
-      {% elif parfum.image_url %}
-        <img class="galerie__principale" src="{{ parfum.image_url }}" alt="Flacon {{ parfum.nom }}">
+      {% image_src parfum as src %}
+      {% if src %}
+        <img class="galerie__principale" src="{{ src }}" alt="Flacon {{ parfum.nom }}">
       {% else %}
         <div class="galerie__principale galerie__vide" aria-hidden="true">{{ parfum.nom|slice:":1" }}</div>
       {% endif %}
+
       {% if parfum.images.all %}
         <ul class="galerie__vignettes">
           {% for photo in parfum.images.all %}

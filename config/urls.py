@@ -4,11 +4,12 @@ from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    # URL secrète de l'administration — configurée via la variable ADMIN_URL
+    path(settings.ADMIN_URL, admin.site.urls),
     path("panier/", include("panier.urls")),
     path("", include("catalogue.urls")),
 ]
 
 if settings.DEBUG:
-    # En développement, Django sert lui-même les images envoyées via l'administration.
+    # En développement, Django sert lui-même les images uploadées.
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

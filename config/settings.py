@@ -38,6 +38,17 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 
+# --- Cloudinary (stockage des images uploadées) -------------------------------
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": os.environ.get("CLOUDINARY_CLOUD_NAME", ""),
+    "API_KEY":    os.environ.get("CLOUDINARY_API_KEY", ""),
+    "API_SECRET": os.environ.get("CLOUDINARY_API_SECRET", ""),
+}
+
+# Si Cloudinary est configuré → les images uploadées vont dans le cloud.
+# Sinon (développement local) → elles restent dans media/ sur le disque.
+_cloudinary_ok = all(CLOUDINARY_STORAGE[k] for k in ("CLOUD_NAME", "API_KEY", "API_SECRET"))
+
 # --- Applications -------------------------------------------------------------
 
 INSTALLED_APPS = [
@@ -47,6 +58,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "cloudinary_storage",   # doit être AVANT staticfiles si on utilise Cloudinary
+    "cloudinary",
     "catalogue",
     "panier",
 ]
@@ -105,23 +118,37 @@ AUTH_PASSWORD_VALIDATORS = [
 # --- Langue et heure ----------------------------------------------------------
 
 LANGUAGE_CODE = "fr-fr"
-TIME_ZONE = "UTC"  # À adapter au fuseau horaire de la boutique.
+TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-# --- Fichiers statiques et images envoyées depuis l'administration ------------
+# --- Fichiers statiques -------------------------------------------------------
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-MEDIA_URL = "/media/"
+# --- Fichiers médias (images uploadées) ---------------------------------------
+# En production avec Cloudinary → stockage cloud persistant.
+# En développement local → dossier media/ sur le disque.
+
+if _cloudinary_ok:
+    DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+    MEDIA_URL = "/media/cloudinary/"
+else:
+    MEDIA_URL = "/media/"
+
 MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # --- Réglages propres à la boutique -------------------------------------------
 
-NOM_SITE = "Ma Parfumerie"  # À remplacer par le nom de la marque.
-DEVISE = "€"  # Symbole affiché après les prix.
-QUANTITE_MAX_PANIER = 10  # Quantité maximale d'un même article dans le panier.
+NOM_SITE = "Ma Parfumerie"
+DEVISE = "€"
+QUANTITE_MAX_PANIER = 10
+
+# --- URL secrète de l'administration ------------------------------------------
+# Lisez ADMIN_URL depuis les variables d'env pour garder l'URL secrète.
+ADMIN_URL = os.environ.get("ADMIN_URL", "gestion-privee-parfumerie/")
