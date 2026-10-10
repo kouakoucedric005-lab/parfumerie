@@ -37,7 +37,9 @@
         <a href="{% url 'catalogue:liste' %}?genre=femme">Femme</a>
         <a href="{% url 'catalogue:liste' %}?genre=homme">Homme</a>
         <a href="{% url 'catalogue:liste' %}?genre=mixte">Mixte</a>
-        <a href="{% url 'catalogue:cms_dashboard' %}" style="color: var(--accent-texte); font-weight: 700;">⚙️ Espace CMS</a>
+        {% if user.is_authenticated and user.is_staff %}
+          <a href="/{{ ADMIN_URL }}" style="color: var(--accent-texte); font-weight: 700;">⚙️ Administration</a>
+        {% endif %}
       </nav>
     </div>
   </header>

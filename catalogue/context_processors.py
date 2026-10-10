@@ -7,4 +7,5 @@ def site(request):
         "NOM_SITE": settings.NOM_SITE,
         "DEVISE": settings.DEVISE,
         "QUANTITE_MAX": settings.QUANTITE_MAX_PANIER,
+        "ADMIN_URL": settings.ADMIN_URL,
     }
